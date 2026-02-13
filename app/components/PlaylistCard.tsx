@@ -1,12 +1,12 @@
-import { Link } from "react-router";
+import { Link } from 'react-router'
 
 interface PlaylistCardProps {
   playlist: {
-    id: number;
-    name: string;
-    sourceType: string;
-    createdAt: string;
-  };
+    id: number
+    name: string
+    sourceType: string
+    createdAt: string
+  }
 }
 
 export function PlaylistCard({ playlist }: PlaylistCardProps) {
@@ -17,9 +17,9 @@ export function PlaylistCard({ playlist }: PlaylistCardProps) {
     >
       <h2 className="text-3xl font-semibold mb-3">{playlist.name}</h2>
       <p className="text-xl text-gray-400">
-        {playlist.sourceType === "url" ? "URL" : "File"} &middot; Added{" "}
+        {playlist.sourceType === 'url' ? 'URL' : 'File'} &middot; Added{' '}
         {new Date(playlist.createdAt).toLocaleDateString()}
       </p>
     </Link>
-  );
+  )
 }

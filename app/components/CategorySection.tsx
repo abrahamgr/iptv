@@ -1,17 +1,17 @@
-import { ChannelGrid } from "./ChannelGrid";
+import { ChannelGrid } from './ChannelGrid'
 
 interface Channel {
-  id: number;
-  name: string;
-  url: string;
-  logo: string | null;
-  groupTitle: string;
+  id: number
+  name: string
+  url: string
+  logo: string | null
+  groupTitle: string
 }
 
 interface CategorySectionProps {
-  title: string;
-  channels: Channel[];
-  playlistId: number;
+  title: string
+  channels: Channel[]
+  playlistId: number
 }
 
 export function CategorySection({
@@ -24,5 +24,5 @@ export function CategorySection({
       <h2 className="text-3xl font-bold mb-6 text-gray-200">{title}</h2>
       <ChannelGrid channels={channels} playlistId={playlistId} />
     </section>
-  );
+  )
 }

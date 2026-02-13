@@ -1,48 +1,53 @@
-import { redirect, data } from "react-router";
-import { Form, useActionData, useNavigation } from "react-router";
-import { useState } from "react";
+import { useState } from 'react'
 import {
-  createPlaylistFromURL,
+  data,
+  Form,
+  redirect,
+  useActionData,
+  useNavigation,
+} from 'react-router'
+import {
   createPlaylistFromFile,
-} from "~/lib/playlist-service.server";
-import type { Route } from "./+types/new";
+  createPlaylistFromURL,
+} from '~/lib/playlist-service.server'
+import type { Route } from './+types/new'
 
 export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
-  const name = formData.get("name") as string;
-  const sourceType = formData.get("sourceType") as string;
+  const formData = await request.formData()
+  const name = formData.get('name') as string
+  const sourceType = formData.get('sourceType') as string
 
   if (!name?.trim()) {
-    return data({ error: "Playlist name is required" }, { status: 400 });
+    return data({ error: 'Playlist name is required' }, { status: 400 })
   }
 
   try {
-    if (sourceType === "url") {
-      const url = formData.get("url") as string;
+    if (sourceType === 'url') {
+      const url = formData.get('url') as string
       if (!url?.trim()) {
-        return data({ error: "URL is required" }, { status: 400 });
+        return data({ error: 'URL is required' }, { status: 400 })
       }
-      await createPlaylistFromURL(name.trim(), url.trim());
+      await createPlaylistFromURL(name.trim(), url.trim())
     } else {
-      const file = formData.get("file") as File;
+      const file = formData.get('file') as File
       if (!file || file.size === 0) {
-        return data({ error: "File is required" }, { status: 400 });
+        return data({ error: 'File is required' }, { status: 400 })
       }
-      const content = await file.text();
-      createPlaylistFromFile(name.trim(), file.name, content);
+      const content = await file.text()
+      createPlaylistFromFile(name.trim(), file.name, content)
     }
-    return redirect("/");
+    return redirect('/')
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Failed to add playlist";
-    return data({ error: message }, { status: 400 });
+    const message = e instanceof Error ? e.message : 'Failed to add playlist'
+    return data({ error: message }, { status: 400 })
   }
 }
 
 export default function NewPlaylist() {
-  const actionData = useActionData<typeof action>();
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
-  const [sourceType, setSourceType] = useState<"url" | "file">("url");
+  const actionData = useActionData<typeof action>()
+  const navigation = useNavigation()
+  const isSubmitting = navigation.state === 'submitting'
+  const [sourceType, setSourceType] = useState<'url' | 'file'>('url')
 
   return (
     <div className="min-h-screen p-8">
@@ -74,22 +79,22 @@ export default function NewPlaylist() {
             <div className="flex gap-4">
               <button
                 type="button"
-                onClick={() => setSourceType("url")}
+                onClick={() => setSourceType('url')}
                 className={`text-xl py-4 px-8 rounded-xl font-semibold transition-colors focus:outline-none focus:ring-8 focus:ring-blue-500 ${
-                  sourceType === "url"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                  sourceType === 'url'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
                 URL
               </button>
               <button
                 type="button"
-                onClick={() => setSourceType("file")}
+                onClick={() => setSourceType('file')}
                 className={`text-xl py-4 px-8 rounded-xl font-semibold transition-colors focus:outline-none focus:ring-8 focus:ring-blue-500 ${
-                  sourceType === "file"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                  sourceType === 'file'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
                 File Upload
@@ -98,7 +103,7 @@ export default function NewPlaylist() {
             <input type="hidden" name="sourceType" value={sourceType} />
           </div>
 
-          {sourceType === "url" ? (
+          {sourceType === 'url' ? (
             <div>
               <label className="block text-2xl font-medium mb-3">
                 Playlist URL
@@ -130,7 +135,7 @@ export default function NewPlaylist() {
               disabled={isSubmitting}
               className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 text-white text-2xl font-semibold py-6 px-12 rounded-xl focus:outline-none focus:ring-8 focus:ring-blue-500 focus:ring-offset-4 focus:ring-offset-gray-900 transition-colors"
             >
-              {isSubmitting ? "Adding..." : "Add Playlist"}
+              {isSubmitting ? 'Adding...' : 'Add Playlist'}
             </button>
             <a
               href="/"
@@ -142,5 +147,5 @@ export default function NewPlaylist() {
         </Form>
       </div>
     </div>
-  );
+  )
 }

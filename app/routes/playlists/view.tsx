@@ -1,31 +1,31 @@
-import { Link, Form, redirect } from "react-router";
+import { Form, Link, redirect } from 'react-router'
+import { CategorySection } from '~/components/CategorySection'
 import {
-  getPlaylistWithChannels,
   deletePlaylist,
-} from "~/lib/playlist-service.server";
-import { CategorySection } from "~/components/CategorySection";
-import type { Route } from "./+types/view";
+  getPlaylistWithChannels,
+} from '~/lib/playlist-service.server'
+import type { Route } from './+types/view'
 
 export function loader({ params }: Route.LoaderArgs) {
-  const result = getPlaylistWithChannels(Number(params.id));
+  const result = getPlaylistWithChannels(Number(params.id))
   if (!result) {
-    throw new Response("Playlist not found", { status: 404 });
+    throw new Response('Playlist not found', { status: 404 })
   }
-  return result;
+  return result
 }
 
 export async function action({ params, request }: Route.ActionArgs) {
-  const formData = await request.formData();
-  if (formData.get("intent") === "delete") {
-    deletePlaylist(Number(params.id));
-    return redirect("/");
+  const formData = await request.formData()
+  if (formData.get('intent') === 'delete') {
+    deletePlaylist(Number(params.id))
+    return redirect('/')
   }
-  return null;
+  return null
 }
 
 export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
-  const { playlist, channels, grouped } = loaderData;
-  const categories = Object.keys(grouped).sort();
+  const { playlist, channels, grouped } = loaderData
+  const categories = Object.keys(grouped).sort()
 
   return (
     <div className="min-h-screen p-8">
@@ -43,7 +43,7 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
               type="submit"
               className="bg-red-700 hover:bg-red-600 text-white text-xl font-semibold py-4 px-8 rounded-xl focus:outline-none focus:ring-8 focus:ring-red-500 focus:ring-offset-4 focus:ring-offset-gray-900 transition-colors"
               onClick={(e) => {
-                if (!confirm("Delete this playlist?")) e.preventDefault();
+                if (!confirm('Delete this playlist?')) e.preventDefault()
               }}
             >
               Delete Playlist
@@ -66,5 +66,5 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
         ))}
       </div>
     </div>
-  );
+  )
 }

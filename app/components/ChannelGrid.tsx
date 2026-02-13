@@ -1,14 +1,14 @@
-import { Link } from "react-router";
+import { Link } from 'react-router'
 
 interface Channel {
-  id: number;
-  name: string;
-  logo: string | null;
+  id: number
+  name: string
+  logo: string | null
 }
 
 interface ChannelGridProps {
-  channels: Channel[];
-  playlistId: number;
+  channels: Channel[]
+  playlistId: number
 }
 
 export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
@@ -27,7 +27,7 @@ export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
                 alt={channel.name}
                 className="w-full h-full object-contain p-4"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
+                  ;(e.target as HTMLImageElement).style.display = 'none'
                 }}
               />
             ) : (
@@ -40,5 +40,5 @@ export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
         </Link>
       ))}
     </div>
-  );
+  )
 }

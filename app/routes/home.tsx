@@ -1,15 +1,15 @@
-import { Link } from "react-router";
-import { getAllPlaylists } from "~/lib/playlist-service.server";
-import { PlaylistCard } from "~/components/PlaylistCard";
-import type { Route } from "./+types/_index";
+import { Link } from 'react-router'
+import { PlaylistCard } from '~/components/PlaylistCard'
+import { getAllPlaylists } from '~/lib/playlist-service.server'
+import type { Route } from './+types/home'
 
 export function loader() {
-  const playlists = getAllPlaylists();
-  return { playlists };
+  const playlists = getAllPlaylists()
+  return { playlists }
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { playlists } = loaderData;
+  const { playlists } = loaderData
 
   return (
     <div className="min-h-screen p-8">
@@ -43,5 +43,5 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         )}
       </div>
     </div>
-  );
+  )
 }

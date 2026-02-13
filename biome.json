@@ -21,8 +21,9 @@
 				"noUnusedImports": "error",
 				"noUnusedVariables": "error"
 			},
-			"nursery": {
-				"useSortedClasses": "error"
+			"a11y": {
+				"useMediaCaption": "off",
+				"noLabelWithoutControl": "off"
 			}
 		}
 	},
@@ -35,6 +36,11 @@
 			"jsxQuoteStyle": "double"
 		},
 		"globals": ["React"]
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
 	},
 	"assist": {
 		"enabled": true,
