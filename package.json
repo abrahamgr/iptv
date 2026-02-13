@@ -5,6 +5,8 @@
 	"scripts": {
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
+		"docker:build": "docker build -t tvip .",
+		"docker:run": "docker run --name iptv -d -p 3000:3000 -v ./data:/app/data tvip",
 		"build": "react-router build",
 		"dev": "react-router dev",
 		"lint": "npx @biomejs/biome check",
