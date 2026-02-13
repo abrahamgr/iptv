@@ -34,6 +34,11 @@ Install dependencies:
 npm ci
 ```
 
+Migrate db schema
+```bash
+npm db:migrate
+```
+
 Start the development server:
 
 ```bash

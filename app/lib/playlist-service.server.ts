@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { and, eq, like, sql } from 'drizzle-orm'
 import { getDb } from '~/db/client.server'
 import { channels, playlists } from '~/db/schema.server'
 import { type ParsedChannel, parseM3U } from './m3u-parser.server'
@@ -95,4 +95,244 @@ export function getChannel(id: number) {
 export function deletePlaylist(id: number) {
   const db = getDb()
   db.delete(playlists).where(eq(playlists.id, id)).run()
+}
+
+type ChannelFilters = {
+  categories?: string[]
+  searchQuery?: string
+}
+
+export function getChannelsByCategory(
+  playlistId: number,
+  category: string,
+  limit: number,
+  offset: number,
+  searchQuery?: string,
+) {
+  const db = getDb()
+  const conditions = [
+    eq(channels.playlistId, playlistId),
+    eq(channels.groupTitle, category),
+  ]
+
+  if (searchQuery) {
+    conditions.push(like(channels.name, `%${searchQuery}%`))
+  }
+
+  const channelList = db
+    .select()
+    .from(channels)
+    .where(and(...conditions))
+    .orderBy(channels.sortOrder)
+    .limit(limit)
+    .offset(offset)
+    .all()
+
+  const totalCount = db
+    .select({ count: sql<number>`count(*)` })
+    .from(channels)
+    .where(and(...conditions))
+    .get()
+
+  return {
+    channels: channelList,
+    totalCount: totalCount?.count ?? 0,
+    hasMore: offset + limit < (totalCount?.count ?? 0),
+  }
+}
+
+export function getPlaylistWithPaginatedChannels(
+  id: number,
+  limitPerCategory: number = 30,
+  filters?: ChannelFilters,
+) {
+  const db = getDb()
+  const playlist = db.select().from(playlists).where(eq(playlists.id, id)).get()
+  if (!playlist) return null
+
+  // Get all categories (filtered if needed)
+  const categoryConditions = [eq(channels.playlistId, id)]
+  if (filters?.categories && filters.categories.length > 0) {
+    const catConditions = filters.categories.map(
+      (cat) =>
+        sql`(${channels.groupTitle} = ${cat} OR ${channels.groupTitle} LIKE ${`${cat};%`} OR ${channels.groupTitle} LIKE ${`%;${cat}`} OR ${channels.groupTitle} LIKE ${`%;${cat};%`})`,
+    )
+    categoryConditions.push(sql`(${sql.join(catConditions, sql` OR `)})`)
+  }
+
+  const categoryResults = db
+    .selectDistinct({ groupTitle: channels.groupTitle })
+    .from(channels)
+    .where(and(...categoryConditions))
+    .all()
+
+  const categories = categoryResults.map((c) => c.groupTitle)
+
+  // Fetch paginated channels for each category
+  const grouped: Record<string, (typeof channels.$inferSelect)[]> = {}
+  const totalCounts: Record<string, number> = {}
+  const hasMore: Record<string, boolean> = {}
+
+  for (const category of categories) {
+    const conditions = [
+      eq(channels.playlistId, id),
+      eq(channels.groupTitle, category),
+    ]
+
+    if (filters?.searchQuery) {
+      conditions.push(like(channels.name, `%${filters.searchQuery}%`))
+    }
+
+    const channelList = db
+      .select()
+      .from(channels)
+      .where(and(...conditions))
+      .orderBy(channels.sortOrder)
+      .limit(limitPerCategory)
+      .all()
+
+    const totalCountResult = db
+      .select({ count: sql<number>`count(*)` })
+      .from(channels)
+      .where(and(...conditions))
+      .get()
+
+    const total = totalCountResult?.count ?? 0
+
+    grouped[category] = channelList
+    totalCounts[category] = total
+    hasMore[category] = channelList.length < total
+  }
+
+  // Get total channel count for display
+  const allChannelsCount = db
+    .select({ count: sql<number>`count(*)` })
+    .from(channels)
+    .where(eq(channels.playlistId, id))
+    .get()
+
+  return {
+    playlist,
+    grouped,
+    totalCounts,
+    hasMore,
+    totalChannels: allChannelsCount?.count ?? 0,
+  }
+}
+
+export function getChannelsAlphabetically(
+  playlistId: number,
+  limit: number,
+  offset: number,
+  filters?: ChannelFilters,
+) {
+  const db = getDb()
+  const conditions = [eq(channels.playlistId, playlistId)]
+
+  if (filters?.categories && filters.categories.length > 0) {
+    const categoryConditions = filters.categories.map(
+      (cat) =>
+        sql`(${channels.groupTitle} = ${cat} OR ${channels.groupTitle} LIKE ${`${cat};%`} OR ${channels.groupTitle} LIKE ${`%;${cat}`} OR ${channels.groupTitle} LIKE ${`%;${cat};%`})`,
+    )
+    conditions.push(sql`(${sql.join(categoryConditions, sql` OR `)})`)
+  }
+
+  if (filters?.searchQuery) {
+    conditions.push(like(channels.name, `%${filters.searchQuery}%`))
+  }
+
+  const channelList = db
+    .select()
+    .from(channels)
+    .where(and(...conditions))
+    .orderBy(sql`${channels.name} COLLATE NOCASE`)
+    .limit(limit)
+    .offset(offset)
+    .all()
+
+  const totalCountResult = db
+    .select({ count: sql<number>`count(*)` })
+    .from(channels)
+    .where(and(...conditions))
+    .get()
+
+  const totalCount = totalCountResult?.count ?? 0
+
+  return {
+    channels: channelList,
+    totalCount,
+    hasMore: offset + limit < totalCount,
+  }
+}
+
+export function getChannelsCount(playlistId: number, filters?: ChannelFilters) {
+  const db = getDb()
+  const conditions = [eq(channels.playlistId, playlistId)]
+
+  if (filters?.categories && filters.categories.length > 0) {
+    const categoryConditions = filters.categories.map(
+      (cat) =>
+        sql`(${channels.groupTitle} = ${cat} OR ${channels.groupTitle} LIKE ${`${cat};%`} OR ${channels.groupTitle} LIKE ${`%;${cat}`} OR ${channels.groupTitle} LIKE ${`%;${cat};%`})`,
+    )
+    conditions.push(sql`(${sql.join(categoryConditions, sql` OR `)})`)
+  }
+
+  if (filters?.searchQuery) {
+    conditions.push(like(channels.name, `%${filters.searchQuery}%`))
+  }
+
+  const result = db
+    .select({ count: sql<number>`count(*)` })
+    .from(channels)
+    .where(and(...conditions))
+    .get()
+
+  return result?.count ?? 0
+}
+
+export function getPlaylistWithChannelsAlphabetically(
+  id: number,
+  limit: number = 30,
+  filters?: ChannelFilters,
+) {
+  const db = getDb()
+  const playlist = db.select().from(playlists).where(eq(playlists.id, id)).get()
+  if (!playlist) return null
+
+  // Get all categories for filter dropdown
+  const allCategoriesResult = db
+    .selectDistinct({ groupTitle: channels.groupTitle })
+    .from(channels)
+    .where(eq(channels.playlistId, id))
+    .all()
+
+  const allCategories = [
+    ...new Set(
+      allCategoriesResult.flatMap((c) =>
+        c.groupTitle
+          .split(';')
+          .map((cat) => cat.trim())
+          .filter(Boolean),
+      ),
+    ),
+  ].sort()
+
+  // Get initial batch of channels alphabetically
+  const channelsResult = getChannelsAlphabetically(id, limit, 0, filters)
+
+  // Get total count (unfiltered) for display
+  const totalChannelsCount = db
+    .select({ count: sql<number>`count(*)` })
+    .from(channels)
+    .where(eq(channels.playlistId, id))
+    .get()
+
+  return {
+    playlist,
+    channels: channelsResult.channels,
+    totalCount: channelsResult.totalCount,
+    hasMore: channelsResult.hasMore,
+    totalChannels: totalChannelsCount?.count ?? 0,
+    allCategories,
+  }
 }

@@ -23,7 +23,9 @@
 			},
 			"a11y": {
 				"useMediaCaption": "off",
-				"noLabelWithoutControl": "off"
+				"noLabelWithoutControl": "off",
+				"noSvgWithoutTitle": "off",
+				"noStaticElementInteractions": "warn"
 			}
 		}
 	},

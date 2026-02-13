@@ -14,6 +14,12 @@ export function loader({ params }: Route.LoaderArgs) {
 export default function WatchChannel({ loaderData }: Route.ComponentProps) {
   const { channel, playlistId } = loaderData
 
+  // Split groupTitle by semicolon and process categories
+  const categories = channel.groupTitle
+    .split(';')
+    .map((cat) => cat.trim())
+    .filter((cat) => cat && cat !== 'Uncategorized')
+
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
@@ -25,8 +31,18 @@ export default function WatchChannel({ loaderData }: Route.ComponentProps) {
         </Link>
 
         <h1 className="text-4xl font-bold mb-2">{channel.name}</h1>
-        {channel.groupTitle !== 'Uncategorized' && (
-          <p className="text-xl text-gray-400 mb-6">{channel.groupTitle}</p>
+        {categories.length > 0 && (
+          <div className="mb-6 flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <Link
+                key={category}
+                to={`/playlists/${playlistId}?category=${encodeURIComponent(category)}`}
+                className="inline-block px-4 py-2 rounded-full bg-gray-800 text-gray-300 hover:bg-blue-600 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+              >
+                {category}
+              </Link>
+            ))}
+          </div>
         )}
 
         <VideoPlayer url={channel.url} />
