@@ -1,87 +1,79 @@
-# Welcome to React Router!
+# IPTV
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A web application to import, store, and watch IPTV playlists. Add M3U playlists by URL or file upload, and the app parses channels into a local SQLite database for browsing and streaming.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Import M3U playlists from a URL or file upload
+- Channels stored locally in SQLite for fast offline browsing
+- Channels organized by category/group
+- Built-in HLS video player for live streams
+- Server-side rendered for fast initial loads
+- Dark themed responsive UI
+
+## Tech Stack
+
+- **Framework** — React Router 7 (SSR) with React 19
+- **Language** — TypeScript (strict mode)
+- **Build Tool** — Vite 7
+- **Styling** — Tailwind CSS 4
+- **Database** — SQLite via better-sqlite3 + Drizzle ORM
+- **Video** — HLS.js
+- **Linting** — Biome
+
+## Prerequisites
+
+- Node.js 20+
+- npm
 
 ## Getting Started
 
-### Installation
-
-Install the dependencies:
+Install dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
-### Development
-
-Start the development server with HMR:
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+The app will be available at `http://localhost:3000`.
 
-## Building for Production
+## Available Scripts
 
-Create a production build:
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server with HMR |
+| `npm run build` | Create production build |
+| `npm run start` | Run production server |
+| `npm run lint` | Check code with Biome |
+| `npm run lint:fix` | Auto-fix lint issues |
+| `npm run typecheck` | Run TypeScript type checking |
+
+## Docker
+
+Build and run with Docker:
 
 ```bash
-npm run build
+docker build -t iptv .
+docker run -p 3000:3000 iptv
 ```
 
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
+## Project Structure
 
 ```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+app/
+├── components/     # Reusable React components
+├── db/             # Drizzle schema, client, and migrations
+├── lib/            # Server-side services (M3U parser, playlist service)
+├── routes/         # React Router route modules
+├── root.tsx        # Root layout
+└── routes.ts       # Route definitions
 ```
 
-## Styling
+## License
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+MIT
