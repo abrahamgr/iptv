@@ -5,7 +5,7 @@ import {
   createPlaylistFromURL,
   createPlaylistFromFile,
 } from "~/lib/playlist-service.server";
-import type { Route } from "./+types/playlists.new";
+import type { Route } from "./+types/new";
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();

@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { getChannel } from "~/lib/playlist-service.server";
 import { VideoPlayer } from "~/components/VideoPlayer";
-import type { Route } from "./+types/playlists.$id.watch.$channelId";
+import type { Route  } from "./+types/watch";
 
 export function loader({ params }: Route.LoaderArgs) {
   const channel = getChannel(Number(params.channelId));

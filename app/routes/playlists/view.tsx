@@ -4,7 +4,7 @@ import {
   deletePlaylist,
 } from "~/lib/playlist-service.server";
 import { CategorySection } from "~/components/CategorySection";
-import type { Route } from "./+types/playlists.$id";
+import type { Route } from "./+types/view";
 
 export function loader({ params }: Route.LoaderArgs) {
   const result = getPlaylistWithChannels(Number(params.id));
