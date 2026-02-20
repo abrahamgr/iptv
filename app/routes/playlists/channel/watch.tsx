@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { VideoPlayer } from '~/components/VideoPlayer'
 import { getChannel } from '~/lib/playlist-service.server'
 import type { Route } from './+types/watch'
@@ -13,6 +13,7 @@ export function loader({ params }: Route.LoaderArgs) {
 
 export default function WatchChannel({ loaderData }: Route.ComponentProps) {
   const { channel, playlistId } = loaderData
+  const navigation = useNavigate()
 
   // Split groupTitle by semicolon and process categories
   const categories = channel.groupTitle
@@ -20,11 +21,19 @@ export default function WatchChannel({ loaderData }: Route.ComponentProps) {
     .map((cat) => cat.trim())
     .filter((cat) => cat && cat !== 'Uncategorized')
 
+  const handleBack = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (history.length > 1) {
+      e.preventDefault()
+      navigation(-1)
+    }
+  }
+
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <Link
           to={`/playlists/${playlistId}`}
+          onClick={handleBack}
           className="inline-block text-2xl text-blue-400 hover:text-blue-300 mb-8 focus:outline-none focus:ring-8 focus:ring-blue-500 rounded-lg p-2"
         >
           &larr; Back to channels
