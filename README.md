@@ -36,7 +36,7 @@ npm ci
 
 Migrate db schema
 ```bash
-npm db:migrate
+npm run db:migrate
 ```
 
 Start the development server:
