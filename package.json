@@ -11,7 +11,7 @@
 		"dev": "react-router dev",
 		"lint": "npx @biomejs/biome check",
 		"lint:fix": "npx @biomejs/biome check --write --unsafe ",
-		"prepare": "lefthook install || true",
+		"prepare": "lefthook install || true && ./scripts/link-skills.sh",
 		"start": "react-router-serve ./build/server/index.js",
 		"typecheck": "react-router typegen && tsc"
 	},
