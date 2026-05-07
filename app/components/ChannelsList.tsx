@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
-import { useFetcher } from 'react-router'
+import { useNavigation, useSearchParams } from 'react-router'
 import { ChannelGrid } from './ChannelGrid'
 
 interface Channel {
@@ -15,6 +14,7 @@ interface ChannelsListProps {
   playlistId: number
   totalCount: number
   hasMore: boolean
+  loadedLimit: number
   searchQuery: string
   selectedCategories: string[]
 }
@@ -26,81 +26,31 @@ export function ChannelsList({
   playlistId,
   totalCount,
   hasMore: initialHasMore,
-  searchQuery,
-  selectedCategories,
+  loadedLimit,
 }: ChannelsListProps) {
-  const fetcher = useFetcher<{
-    channels: Channel[]
-    totalCount: number
-    hasMore: boolean
-  }>()
-  const [loadedChannels, setLoadedChannels] =
-    useState<Channel[]>(initialChannels)
-  const [currentOffset, setCurrentOffset] = useState(initialChannels.length)
-  const [hasMore, setHasMore] = useState(initialHasMore)
-  const lastProcessedData = useRef<typeof fetcher.data | null>(null)
-
-  const filterKey = `${playlistId}-${searchQuery}-${selectedCategories.join(',')}`
-  const previousFilterKey = useRef(filterKey)
-
-  // Reset when filters change (not on every loader revalidation)
-  useEffect(() => {
-    if (previousFilterKey.current === filterKey) return
-
-    previousFilterKey.current = filterKey
-    setLoadedChannels(initialChannels)
-    setCurrentOffset(initialChannels.length)
-    setHasMore(initialHasMore)
-    lastProcessedData.current = null
-  }, [filterKey, initialChannels, initialHasMore])
-
-  // Handle fetcher response
-  useEffect(() => {
-    if (
-      fetcher.data &&
-      fetcher.state === 'idle' &&
-      fetcher.data !== lastProcessedData.current
-    ) {
-      lastProcessedData.current = fetcher.data
-      const newChannels = fetcher.data.channels
-      if (newChannels.length > 0) {
-        const nextOffset = currentOffset + newChannels.length
-        setLoadedChannels((prev) => [...prev, ...newChannels])
-        setCurrentOffset(nextOffset)
-        setHasMore(fetcher.data.hasMore && nextOffset < fetcher.data.totalCount)
-      } else {
-        setHasMore(false)
-      }
-    }
-  }, [currentOffset, fetcher.data, fetcher.state])
+  const navigation = useNavigation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const hasMore = initialHasMore && initialChannels.length < totalCount
 
   const handleLoadMore = () => {
-    const formData = new FormData()
-    formData.set('intent', 'loadMore')
-    formData.set('offset', currentOffset.toString())
-    formData.set('limit', LOAD_MORE_INCREMENT.toString())
-    if (searchQuery) {
-      formData.set('searchQuery', searchQuery)
-    }
-    if (selectedCategories.length > 0) {
-      formData.set('categories', selectedCategories.join(','))
-    }
-
-    fetcher.submit(formData, { method: 'post' })
+    const nextParams = new URLSearchParams(searchParams)
+    const nextLimit = Math.min(loadedLimit + LOAD_MORE_INCREMENT, totalCount)
+    nextParams.set('limit', nextLimit.toString())
+    setSearchParams(nextParams)
   }
 
   const isLoading =
-    fetcher.state === 'submitting' || fetcher.state === 'loading'
+    navigation.state === 'loading' && navigation.formMethod === undefined
 
   return (
     <div>
-      {loadedChannels.length === 0 ? (
+      {initialChannels.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-xl text-gray-400">No channels found.</p>
         </div>
       ) : (
         <>
-          <ChannelGrid channels={loadedChannels} playlistId={playlistId} />
+          <ChannelGrid channels={initialChannels} playlistId={playlistId} />
           {hasMore && (
             <div className="mt-6 text-center">
               <button
@@ -111,7 +61,7 @@ export function ChannelsList({
               >
                 {isLoading
                   ? 'Loading...'
-                  : `Load More (${totalCount - loadedChannels.length} remaining)`}
+                  : `Load More (${totalCount - initialChannels.length} remaining)`}
               </button>
             </div>
           )}

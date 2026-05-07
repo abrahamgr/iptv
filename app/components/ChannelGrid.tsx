@@ -1,6 +1,6 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 
 interface Channel {
   id: number
@@ -27,6 +27,7 @@ const getColumnsCount = (width: number) => {
 }
 
 export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
+  const location = useLocation()
   const parentRef = useRef<HTMLDivElement>(null)
   const [columnsCount, setColumnsCount] = useState(5)
 
@@ -102,6 +103,7 @@ export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
             key={channel.id}
             channel={channel}
             playlistId={playlistId}
+            search={location.search}
           />
         ))}
       </div>
@@ -140,6 +142,7 @@ export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
                   key={channel.id}
                   channel={channel}
                   playlistId={playlistId}
+                  search={location.search}
                 />
               ))}
             </div>
@@ -153,13 +156,15 @@ export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
 function ChannelCard({
   channel,
   playlistId,
+  search,
 }: {
   channel: Channel
   playlistId: number
+  search: string
 }) {
   return (
     <Link
-      to={`/playlists/${playlistId}/watch/${channel.id}`}
+      to={`/playlists/${playlistId}/watch/${channel.id}${search}`}
       className="bg-gray-800 hover:bg-gray-700 rounded-xl overflow-hidden transition-colors focus:outline-none focus:ring-8 focus:ring-blue-500 focus:ring-offset-4 focus:ring-offset-gray-900"
     >
       <div className="aspect-video bg-gray-700 flex items-center justify-center">

@@ -21,6 +21,7 @@ export function ChannelFilters({
 
   const hasActiveFilters =
     selectedCategories.length > 0 || searchQuery.length > 0
+  const filterKey = `${searchQuery}-${selectedCategories.join(',')}`
 
   const handleClearFilters = () => {
     submit({}, { method: 'get' })
@@ -40,6 +41,7 @@ export function ChannelFilters({
   return (
     <div className="mb-8 space-y-4">
       <Form
+        key={filterKey}
         method="get"
         id="channel-filter-form"
         className="flex flex-col sm:flex-row gap-4"

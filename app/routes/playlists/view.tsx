@@ -19,6 +19,11 @@ export function loader({ params, request }: Route.LoaderArgs) {
     categoryParams.length > 0
       ? categoryParams.flatMap((c) => c.split(',')).filter(Boolean)
       : undefined
+  const requestedLimit = Number(url.searchParams.get('limit'))
+  const limit =
+    Number.isFinite(requestedLimit) && requestedLimit > INITIAL_LIMIT
+      ? requestedLimit
+      : INITIAL_LIMIT
 
   const filters = {
     categories,
@@ -27,7 +32,7 @@ export function loader({ params, request }: Route.LoaderArgs) {
 
   const result = getPlaylistWithChannelsAlphabetically(
     playlistId,
-    INITIAL_LIMIT,
+    limit,
     filters,
   )
 
@@ -38,6 +43,7 @@ export function loader({ params, request }: Route.LoaderArgs) {
   return {
     ...result,
     filteredCategories: categories,
+    loadedLimit: limit,
     searchQuery,
   }
 }
@@ -83,6 +89,7 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
     totalChannels,
     allCategories,
     filteredCategories,
+    loadedLimit,
     searchQuery,
   } = loaderData
 
@@ -121,6 +128,7 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
           playlistId={playlist.id}
           totalCount={totalCount}
           hasMore={hasMore}
+          loadedLimit={loadedLimit}
           searchQuery={searchQuery ?? ''}
           selectedCategories={filteredCategories ?? []}
         />
