@@ -1,57 +1,49 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
+import { Form, useNavigation, useSubmit } from 'react-router'
 
 interface ChannelFiltersProps {
   categories: string[]
   selectedCategories: string[]
   searchQuery: string
-  onCategoryChange: (categories: string[]) => void
-  onSearchChange: (query: string) => void
-  onClearFilters: () => void
 }
 
 export function ChannelFilters({
   categories,
   selectedCategories,
   searchQuery,
-  onSearchChange,
-  onCategoryChange,
-  onClearFilters,
 }: ChannelFiltersProps) {
+  const navigation = useNavigation()
+  const submit = useSubmit()
+  const isSearching =
+    navigation.state === 'loading' && navigation.formMethod === 'GET'
+
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
-  const [inputValue, setInputValue] = useState(searchQuery)
-  const isFirstRender = useRef(true)
-  const onSearchChangeRef = useRef(onSearchChange)
-  onSearchChangeRef.current = onSearchChange
-
-  useEffect(() => {
-    setInputValue(searchQuery)
-  }, [searchQuery])
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
-    }
-    const timer = setTimeout(() => {
-      onSearchChangeRef.current(inputValue)
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [inputValue])
 
   const hasActiveFilters =
     selectedCategories.length > 0 || searchQuery.length > 0
 
-  const handleCategoryToggle = (category: string) => {
-    if (selectedCategories.includes(category)) {
-      onCategoryChange(selectedCategories.filter((c) => c !== category))
-    } else {
-      onCategoryChange([...selectedCategories, category])
-    }
+  const handleClearFilters = () => {
+    submit({}, { method: 'get' })
+  }
+
+  const handleCategoryChange = () => {
+    // When checking/unchecking, we want to submit the form.
+    // By using a timeout, we allow the DOM to update the checkbox state first.
+    setTimeout(() => {
+      const form = document.getElementById(
+        'channel-filter-form',
+      ) as HTMLFormElement
+      if (form) submit(form)
+    }, 0)
   }
 
   return (
     <div className="mb-8 space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4">
+      <Form
+        method="get"
+        id="channel-filter-form"
+        className="flex flex-col sm:flex-row gap-4"
+      >
         <div className="flex-1">
           <label
             htmlFor="search"
@@ -59,14 +51,21 @@ export function ChannelFilters({
           >
             Search Channels
           </label>
-          <input
-            id="search"
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Search by channel name..."
-            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          <div className="relative">
+            <input
+              id="search"
+              name="search"
+              type="text"
+              defaultValue={searchQuery}
+              placeholder="Search by channel name..."
+              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {isSearching && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex-1 relative">
@@ -100,13 +99,11 @@ export function ChannelFilters({
 
           {isCategoryOpen && (
             <>
-              <div
-                role="presentation"
-                className="fixed inset-0 z-10"
+              <button
+                type="button"
+                aria-label="Close category menu"
+                className="fixed inset-0 z-10 cursor-default"
                 onClick={() => setIsCategoryOpen(false)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') setIsCategoryOpen(false)
-                }}
               />
               <div className="absolute z-20 w-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-64 overflow-y-auto">
                 <div className="p-2 space-y-1">
@@ -119,8 +116,10 @@ export function ChannelFilters({
                       >
                         <input
                           type="checkbox"
-                          checked={isSelected}
-                          onChange={() => handleCategoryToggle(category)}
+                          name="category"
+                          value={category}
+                          defaultChecked={isSelected}
+                          onChange={() => handleCategoryChange()}
                           className="mr-3 w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
                         />
                         <span className="text-white">{category}</span>
@@ -132,17 +131,17 @@ export function ChannelFilters({
             </>
           )}
         </div>
-      </div>
 
-      {hasActiveFilters && (
-        <button
-          type="button"
-          onClick={onClearFilters}
-          className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
-        >
-          Clear Filters
-        </button>
-      )}
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            Clear Filters
+          </button>
+        )}
+      </Form>
     </div>
   )
 }

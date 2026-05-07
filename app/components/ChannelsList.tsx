@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useFetcher } from 'react-router'
 import { ChannelGrid } from './ChannelGrid'
 
@@ -38,27 +38,41 @@ export function ChannelsList({
     useState<Channel[]>(initialChannels)
   const [currentOffset, setCurrentOffset] = useState(initialChannels.length)
   const [hasMore, setHasMore] = useState(initialHasMore)
+  const lastProcessedData = useRef<typeof fetcher.data | null>(null)
 
-  // Reset when initial channels change (e.g., filter change)
+  const filterKey = `${playlistId}-${searchQuery}-${selectedCategories.join(',')}`
+  const previousFilterKey = useRef(filterKey)
+
+  // Reset when filters change (not on every loader revalidation)
   useEffect(() => {
+    if (previousFilterKey.current === filterKey) return
+
+    previousFilterKey.current = filterKey
     setLoadedChannels(initialChannels)
     setCurrentOffset(initialChannels.length)
     setHasMore(initialHasMore)
-  }, [initialChannels, initialHasMore])
+    lastProcessedData.current = null
+  }, [filterKey, initialChannels, initialHasMore])
 
   // Handle fetcher response
   useEffect(() => {
-    if (fetcher.data && fetcher.state === 'idle') {
+    if (
+      fetcher.data &&
+      fetcher.state === 'idle' &&
+      fetcher.data !== lastProcessedData.current
+    ) {
+      lastProcessedData.current = fetcher.data
       const newChannels = fetcher.data.channels
       if (newChannels.length > 0) {
+        const nextOffset = currentOffset + newChannels.length
         setLoadedChannels((prev) => [...prev, ...newChannels])
-        setCurrentOffset((prev) => prev + newChannels.length)
-        setHasMore(fetcher.data.hasMore)
+        setCurrentOffset(nextOffset)
+        setHasMore(fetcher.data.hasMore && nextOffset < fetcher.data.totalCount)
       } else {
         setHasMore(false)
       }
     }
-  }, [fetcher.data, fetcher.state])
+  }, [currentOffset, fetcher.data, fetcher.state])
 
   const handleLoadMore = () => {
     const formData = new FormData()

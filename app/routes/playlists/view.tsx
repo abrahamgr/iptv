@@ -1,5 +1,4 @@
-import { useMemo } from 'react'
-import { Form, Link, redirect, useSearchParams } from 'react-router'
+import { Form, redirect } from 'react-router'
 import { ChannelFilters } from '~/components/ChannelFilters'
 import { ChannelsList } from '~/components/ChannelsList'
 import {
@@ -15,10 +14,11 @@ export function loader({ params, request }: Route.LoaderArgs) {
   const playlistId = Number(params.id)
   const url = new URL(request.url)
   const searchQuery = url.searchParams.get('search') || undefined
-  const categoryParam = url.searchParams.get('category')
-  const categories = categoryParam
-    ? categoryParam.split(',').filter(Boolean)
-    : undefined
+  const categoryParams = url.searchParams.getAll('category')
+  const categories =
+    categoryParams.length > 0
+      ? categoryParams.flatMap((c) => c.split(',')).filter(Boolean)
+      : undefined
 
   const filters = {
     categories,
@@ -35,7 +35,11 @@ export function loader({ params, request }: Route.LoaderArgs) {
     throw new Response('Playlist not found', { status: 404 })
   }
 
-  return result
+  return {
+    ...result,
+    filteredCategories: categories,
+    searchQuery,
+  }
 }
 
 export async function action({ params, request }: Route.ActionArgs) {
@@ -78,55 +82,15 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
     hasMore,
     totalChannels,
     allCategories,
+    filteredCategories,
+    searchQuery,
   } = loaderData
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  // Initialize filters from URL search params
-  const selectedCategories = useMemo(() => {
-    const categoryParam = searchParams.get('category')
-    if (!categoryParam) return []
-    return categoryParam.split(',').filter(Boolean)
-  }, [searchParams])
-
-  const searchQuery = useMemo(() => {
-    return searchParams.get('search') || ''
-  }, [searchParams])
-
-  // Update URL when filters change
-  const handleCategoryChange = (categories: string[]) => {
-    const newParams = new URLSearchParams(searchParams)
-    if (categories.length > 0) {
-      newParams.set('category', categories.join(','))
-    } else {
-      newParams.delete('category')
-    }
-    setSearchParams(newParams, { replace: true })
-  }
-
-  const handleSearchChange = (query: string) => {
-    const newParams = new URLSearchParams(searchParams)
-    if (query) {
-      newParams.set('search', query)
-    } else {
-      newParams.delete('search')
-    }
-    setSearchParams(newParams, { replace: true })
-  }
-
-  const handleClearFilters = () => {
-    setSearchParams({}, { replace: true })
-  }
 
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <Link
-            to="/"
-            className="text-2xl text-blue-400 hover:text-blue-300 focus:outline-none focus:ring-8 focus:ring-blue-500 rounded-lg p-2"
-          >
-            &larr; Back
-          </Link>
+          <h1 className="text-5xl font-bold">{playlist.name}</h1>
           <Form method="post">
             <input type="hidden" name="intent" value="delete" />
             <button
@@ -140,8 +104,6 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
             </button>
           </Form>
         </div>
-
-        <h1 className="text-5xl font-bold mb-4">{playlist.name}</h1>
         <p className="text-2xl text-gray-400 mb-8">
           {totalCount === totalChannels
             ? `${totalChannels} channels`
@@ -150,11 +112,8 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
 
         <ChannelFilters
           categories={allCategories}
-          selectedCategories={selectedCategories}
-          searchQuery={searchQuery}
-          onCategoryChange={handleCategoryChange}
-          onSearchChange={handleSearchChange}
-          onClearFilters={handleClearFilters}
+          selectedCategories={filteredCategories ?? []}
+          searchQuery={searchQuery ?? ''}
         />
 
         <ChannelsList
@@ -162,8 +121,8 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
           playlistId={playlist.id}
           totalCount={totalCount}
           hasMore={hasMore}
-          searchQuery={searchQuery}
-          selectedCategories={selectedCategories}
+          searchQuery={searchQuery ?? ''}
+          selectedCategories={filteredCategories ?? []}
         />
       </div>
     </div>

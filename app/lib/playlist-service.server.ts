@@ -245,7 +245,7 @@ export function getChannelsAlphabetically(
     .select()
     .from(channels)
     .where(and(...conditions))
-    .orderBy(sql`${channels.name} COLLATE NOCASE`)
+    .orderBy(sql`${channels.name} COLLATE NOCASE`, channels.id)
     .limit(limit)
     .offset(offset)
     .all()
