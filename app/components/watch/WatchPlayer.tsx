@@ -38,8 +38,16 @@ export function WatchPlayer({
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [areControlsVisible, setAreControlsVisible] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const { adjustVolume, isMuted, isPlaying, toggleMute, togglePlay, volume } =
-    useVideoControls(videoRef)
+  const {
+    adjustVolume,
+    hasLoadedOnce,
+    isLoading,
+    isMuted,
+    isPlaying,
+    toggleMute,
+    togglePlay,
+    volume,
+  } = useVideoControls(videoRef)
 
   const categories = channel.groupTitle
     .split(';')
@@ -114,6 +122,25 @@ export function WatchPlayer({
         className="h-full w-full bg-black"
       />
 
+      {isLoading && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4 rounded-2xl bg-black/45 px-8 py-6 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur">
+            <div
+              aria-hidden="true"
+              className="h-12 w-12 animate-spin rounded-full border-4 border-white/25 border-t-white"
+            />
+            <div className="text-center">
+              <p className="text-lg font-semibold">
+                {hasLoadedOnce
+                  ? 'Buffering live stream'
+                  : 'Loading live stream'}
+              </p>
+              <p className="mt-1 text-sm text-gray-300">Please wait...</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
         ref={overlayRef}
         className={`pointer-events-none absolute inset-0 z-10 transition-opacity duration-300 ${
@@ -131,6 +158,7 @@ export function WatchPlayer({
         <WatchControls
           adjustVolume={adjustVolume}
           isFullscreen={isFullscreen}
+          isLoading={isLoading}
           isMuted={isMuted}
           isPlaying={isPlaying}
           toggleFullscreen={toggleFullscreen}
