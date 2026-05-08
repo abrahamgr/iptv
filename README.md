@@ -63,8 +63,40 @@ The app will be available at `http://localhost:3000`.
 Build and run with Docker:
 
 ```bash
+npm run docker:build
+mkdir -p data
+npm run docker:run
+```
+
+The app will be available at `http://localhost:3000`.
+
+### Docker Migrations
+
+Database migrations are generated during development and committed in
+`app/db/migrations`. The production Docker image copies those migrations into
+the runtime image, and the app applies pending migrations automatically when it
+starts in production.
+
+The SQLite database lives at `/app/data/iptv.db` inside the container. Mount a
+persistent volume to `/app/data` so the database and migration history survive
+container rebuilds and restarts.
+
+To test Docker persistence and migrations:
+
+```bash
 docker build -t iptv .
-docker run -p 3000:3000 iptv
+mkdir -p data
+docker run --name iptv-test --rm -p 3000:3000 -v "$PWD/data:/app/data" iptv
+```
+
+After startup, confirm `data/iptv.db` exists on the host. Stop the container and
+run the same command again with the same `data` directory; the app should start
+normally and only pending migrations will run.
+
+If `sqlite3` is installed locally, you can inspect the database schema:
+
+```bash
+sqlite3 data/iptv.db ".tables"
 ```
 
 ## Project Structure

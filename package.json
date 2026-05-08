@@ -5,13 +5,13 @@
 	"scripts": {
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
-		"docker:build": "docker build -t tvip .",
-		"docker:run": "docker run --name iptv -d -p 3000:3000 -v ./data:/app/data tvip",
+		"docker:build": "docker build -t iptv .",
+		"docker:run": "docker run --name iptv -d -p 3000:3000 -v ./data:/app/data iptv",
 		"build": "react-router build",
 		"dev": "react-router dev",
 		"lint": "npx @biomejs/biome check",
 		"lint:fix": "npx @biomejs/biome check --write --unsafe ",
-		"prepare": "lefthook install || true && ./scripts/link-skills.sh",
+		"prepare": "lefthook install && ./scripts/link-skills.sh || true",
 		"start": "react-router-serve ./build/server/index.js",
 		"typecheck": "react-router typegen && tsc"
 	},

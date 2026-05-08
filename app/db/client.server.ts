@@ -21,7 +21,6 @@ function createDb() {
   const db = drizzle(sqlite, { schema })
   // run only on prod, for dev migrations are run manually with `npm run db:migrate`
   if (import.meta.env.PROD) {
-    console.log('MIGRATIONS_FOLDER', MIGRATIONS_FOLDER)
     migrate(db, { migrationsFolder: MIGRATIONS_FOLDER })
   }
   return db
