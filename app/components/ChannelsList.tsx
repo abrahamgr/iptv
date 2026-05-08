@@ -50,7 +50,11 @@ export function ChannelsList({
         </div>
       ) : (
         <>
-          <ChannelGrid channels={initialChannels} playlistId={playlistId} />
+          <ChannelGrid
+            canDelete
+            channels={initialChannels}
+            playlistId={playlistId}
+          />
           {hasMore && (
             <div className="mt-6 text-center">
               <button

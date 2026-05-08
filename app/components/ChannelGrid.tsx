@@ -6,6 +6,7 @@ import type { Channel } from './channel-types'
 import { DeleteChannelDialog } from './DeleteChannelDialog'
 
 interface ChannelGridProps {
+  canDelete?: boolean
   channels: Channel[]
   playlistId?: number
 }
@@ -23,7 +24,11 @@ const getColumnsCount = (width: number) => {
   return 2 // grid-cols-2
 }
 
-export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
+export function ChannelGrid({
+  canDelete = false,
+  channels,
+  playlistId,
+}: ChannelGridProps) {
   const location = useLocation()
   const parentRef = useRef<HTMLDivElement>(null)
   const [columnsCount, setColumnsCount] = useState(5)
@@ -103,7 +108,9 @@ export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
               channel={channel}
               playlistId={playlistId}
               search={location.search}
-              onDelete={() => setChannelToDelete(channel)}
+              onDelete={
+                canDelete ? () => setChannelToDelete(channel) : undefined
+              }
             />
           ))}
         </div>
@@ -151,7 +158,9 @@ export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
                     channel={channel}
                     playlistId={playlistId}
                     search={location.search}
-                    onDelete={() => setChannelToDelete(channel)}
+                    onDelete={
+                      canDelete ? () => setChannelToDelete(channel) : undefined
+                    }
                   />
                 ))}
               </div>
