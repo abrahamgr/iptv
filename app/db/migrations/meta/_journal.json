@@ -8,6 +8,13 @@
 			"when": 1770947800938,
 			"tag": "0000_soft_exiles",
 			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "6",
+			"when": 1770947800939,
+			"tag": "0001_add_channel_favorites",
+			"breakpoints": true
 		}
 	]
 }

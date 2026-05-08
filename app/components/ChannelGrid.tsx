@@ -4,13 +4,14 @@ import { Link, useLocation } from 'react-router'
 
 interface Channel {
   id: number
+  playlistId?: number
   name: string
   logo: string | null
 }
 
 interface ChannelGridProps {
   channels: Channel[]
-  playlistId: number
+  playlistId?: number
 }
 
 // Estimate item height for virtual scrolling
@@ -159,12 +160,16 @@ function ChannelCard({
   search,
 }: {
   channel: Channel
-  playlistId: number
+  playlistId?: number
   search: string
 }) {
+  const channelPlaylistId = playlistId ?? channel.playlistId
+
+  if (!channelPlaylistId) return null
+
   return (
     <Link
-      to={`/playlists/${playlistId}/watch/${channel.id}${search}`}
+      to={`/playlists/${channelPlaylistId}/watch/${channel.id}${search}`}
       className="bg-gray-800 hover:bg-gray-700 rounded-xl overflow-hidden transition-colors focus:outline-none focus:ring-8 focus:ring-blue-500 focus:ring-offset-4 focus:ring-offset-gray-900"
     >
       <div className="aspect-video bg-gray-700 flex items-center justify-center">

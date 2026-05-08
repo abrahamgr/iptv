@@ -5,9 +5,9 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router'
+import { Link, useFetcher, useLocation, useNavigate } from 'react-router'
 import { VideoPlayer } from '~/components/VideoPlayer'
-import { getChannel } from '~/lib/playlist-service.server'
+import { getChannel, setChannelFavorite } from '~/lib/playlist-service.server'
 import type { Route } from './+types/watch'
 
 export function loader({ params }: Route.LoaderArgs) {
@@ -18,8 +18,24 @@ export function loader({ params }: Route.LoaderArgs) {
   return { channel, playlistId: params.id }
 }
 
+export async function action({ params, request }: Route.ActionArgs) {
+  const formData = await request.formData()
+  const intent = formData.get('intent')
+
+  if (intent === 'favorite') {
+    setChannelFavorite(
+      Number(params.channelId),
+      formData.get('isFavorite') === 'true',
+    )
+    return null
+  }
+
+  return null
+}
+
 export default function WatchChannel({ loaderData }: Route.ComponentProps) {
   const { channel, playlistId } = loaderData
+  const favoriteFetcher = useFetcher()
   const location = useLocation()
   const navigation = useNavigate()
   const surfaceRef = useRef<HTMLDivElement>(null)
@@ -33,6 +49,10 @@ export default function WatchChannel({ loaderData }: Route.ComponentProps) {
     .split(';')
     .map((cat) => cat.trim())
     .filter((cat) => cat && cat !== 'Uncategorized')
+  const optimisticFavorite = favoriteFetcher.formData?.get('isFavorite')
+  const isFavorite =
+    optimisticFavorite === 'true' ||
+    (optimisticFavorite === undefined && channel.isFavorite)
 
   const handleBack = (e: MouseEvent<HTMLAnchorElement>) => {
     if (history.length > 1) {
@@ -147,6 +167,27 @@ export default function WatchChannel({ loaderData }: Route.ComponentProps) {
               </div>
             )}
           </div>
+          <favoriteFetcher.Form method="post">
+            <input type="hidden" name="intent" value="favorite" />
+            <input
+              type="hidden"
+              name="isFavorite"
+              value={isFavorite ? 'false' : 'true'}
+            />
+            <button
+              type="submit"
+              aria-label={
+                isFavorite
+                  ? 'Remove channel from favorites'
+                  : 'Add channel to favorites'
+              }
+              className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/10 text-3xl leading-none transition-colors hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-blue-500 ${
+                isFavorite ? 'text-yellow-300' : 'text-white'
+              }`}
+            >
+              {isFavorite ? '★' : '☆'}
+            </button>
+          </favoriteFetcher.Form>
         </div>
       </div>
 

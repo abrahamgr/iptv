@@ -92,6 +92,24 @@ export function getChannel(id: number) {
   return db.select().from(channels).where(eq(channels.id, id)).get() ?? null
 }
 
+export function setChannelFavorite(channelId: number, isFavorite: boolean) {
+  const db = getDb()
+  db.update(channels)
+    .set({ isFavorite })
+    .where(eq(channels.id, channelId))
+    .run()
+}
+
+export function getFavoriteChannels() {
+  const db = getDb()
+  return db
+    .select()
+    .from(channels)
+    .where(eq(channels.isFavorite, true))
+    .orderBy(sql`${channels.name} COLLATE NOCASE`, channels.id)
+    .all()
+}
+
 export function deletePlaylist(id: number) {
   const db = getDb()
   db.delete(playlists).where(eq(playlists.id, id)).run()

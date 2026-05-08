@@ -8,6 +8,7 @@ import {
 export default [
   layout('routes/layouts/app-layout.tsx', [
     index('routes/home.tsx'),
+    route('favorites', 'routes/favorites.tsx'),
     route('playlists/new', 'routes/playlists/new.tsx'),
     route('playlists/:id', 'routes/playlists/view.tsx'),
   ]),

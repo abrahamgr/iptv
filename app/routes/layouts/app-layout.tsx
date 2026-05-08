@@ -20,7 +20,7 @@ export default function AppLayout() {
                 Playlists
               </NavLink>
               <NavLink
-                to="/playlists/new"
+                to="/favorites"
                 className={({ isActive }) =>
                   `rounded-xl px-6 py-3 text-lg font-semibold transition-colors focus:outline-none focus:ring-8 focus:ring-blue-500 focus:ring-offset-4 focus:ring-offset-gray-900 ${
                     isActive
@@ -29,7 +29,7 @@ export default function AppLayout() {
                   }`
                 }
               >
-                Add Playlist
+                Favorites
               </NavLink>
             </div>
           </div>

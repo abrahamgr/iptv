@@ -1,4 +1,5 @@
-import { Form, redirect } from 'react-router'
+import { useState } from 'react'
+import { Form, redirect, useNavigation } from 'react-router'
 import { ChannelFilters } from '~/components/ChannelFilters'
 import { ChannelsList } from '~/components/ChannelsList'
 import {
@@ -81,6 +82,8 @@ export async function action({ params, request }: Route.ActionArgs) {
 }
 
 export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
+  const navigation = useNavigation()
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const {
     playlist,
     channels,
@@ -92,24 +95,20 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
     loadedLimit,
     searchQuery,
   } = loaderData
+  const isDeleting = navigation.state === 'submitting'
 
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-5xl font-bold">{playlist.name}</h1>
-          <Form method="post">
-            <input type="hidden" name="intent" value="delete" />
-            <button
-              type="submit"
-              className="bg-red-700 hover:bg-red-600 text-white text-xl font-semibold py-4 px-8 rounded-xl focus:outline-none focus:ring-8 focus:ring-red-500 focus:ring-offset-4 focus:ring-offset-gray-900 transition-colors"
-              onClick={(e) => {
-                if (!confirm('Delete this playlist?')) e.preventDefault()
-              }}
-            >
-              Delete Playlist
-            </button>
-          </Form>
+          <button
+            type="button"
+            className="bg-red-700 hover:bg-red-600 text-white text-xl font-semibold py-4 px-8 rounded-xl focus:outline-none focus:ring-8 focus:ring-red-500 focus:ring-offset-4 focus:ring-offset-gray-900 transition-colors"
+            onClick={() => setIsDeleteDialogOpen(true)}
+          >
+            Delete Playlist
+          </button>
         </div>
         <p className="text-2xl text-gray-400 mb-8">
           {totalCount === totalChannels
@@ -132,6 +131,63 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
           searchQuery={searchQuery ?? ''}
           selectedCategories={filteredCategories ?? []}
         />
+      </div>
+
+      {isDeleteDialogOpen && (
+        <DeletePlaylistDialog
+          isDeleting={isDeleting}
+          playlistName={playlist.name}
+          onClose={() => setIsDeleteDialogOpen(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+function DeletePlaylistDialog({
+  isDeleting,
+  playlistName,
+  onClose,
+}: {
+  isDeleting: boolean
+  playlistName: string
+  onClose: () => void
+}) {
+  return (
+    <div
+      aria-labelledby="delete-playlist-title"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-8"
+      role="dialog"
+    >
+      <div className="w-full max-w-xl rounded-xl border border-gray-700 bg-gray-800 p-8 shadow-2xl">
+        <h2 id="delete-playlist-title" className="text-3xl font-bold">
+          Delete playlist?
+        </h2>
+        <p className="mt-4 text-xl text-gray-300">
+          This will permanently delete "{playlistName}" and all of its channels.
+        </p>
+
+        <div className="mt-8 flex justify-end gap-4">
+          <button
+            type="button"
+            className="bg-gray-700 hover:bg-gray-600 text-white text-xl font-semibold py-4 px-8 rounded-xl focus:outline-none focus:ring-8 focus:ring-blue-500 focus:ring-offset-4 focus:ring-offset-gray-800 transition-colors"
+            onClick={onClose}
+            disabled={isDeleting}
+          >
+            Cancel
+          </button>
+          <Form method="post">
+            <input type="hidden" name="intent" value="delete" />
+            <button
+              type="submit"
+              disabled={isDeleting}
+              className="bg-red-700 hover:bg-red-600 disabled:bg-gray-600 text-white text-xl font-semibold py-4 px-8 rounded-xl focus:outline-none focus:ring-8 focus:ring-red-500 focus:ring-offset-4 focus:ring-offset-gray-800 transition-colors"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </button>
+          </Form>
+        </div>
       </div>
     </div>
   )

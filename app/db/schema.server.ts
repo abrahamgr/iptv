@@ -23,4 +23,7 @@ export const channels = sqliteTable('channels', {
   tvgId: text('tvg_id'),
   tvgName: text('tvg_name'),
   sortOrder: integer('sort_order').notNull().default(0),
+  isFavorite: integer('is_favorite', { mode: 'boolean' })
+    .notNull()
+    .default(false),
 })
