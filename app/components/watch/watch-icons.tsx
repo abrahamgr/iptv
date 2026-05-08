@@ -6,6 +6,23 @@ export function PlayIcon() {
   )
 }
 
+export function BackIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2.25"
+      viewBox="0 0 24 24"
+    >
+      <path d="m15 6-6 6 6 6" />
+    </svg>
+  )
+}
+
 export function PauseIcon() {
   return (
     <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24">

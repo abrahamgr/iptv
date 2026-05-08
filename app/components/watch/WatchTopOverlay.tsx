@@ -1,5 +1,6 @@
 import type { MouseEvent, ReactNode } from 'react'
 import { Link } from 'react-router'
+import { BackIcon } from './watch-icons'
 
 type WatchTopOverlayProps = {
   backTo: string
@@ -27,9 +28,9 @@ export function WatchTopOverlay({
               to={backTo}
               onClick={onBack}
               aria-label="Back to channels"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-3xl leading-none text-white transition-colors hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-blue-500"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-blue-500"
             >
-              ←
+              <BackIcon />
             </Link>
           </div>
           <h1 className="truncate text-2xl font-bold sm:text-4xl">{title}</h1>
