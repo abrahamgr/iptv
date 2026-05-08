@@ -50,6 +50,10 @@ export function loader({ params, request }: Route.LoaderArgs) {
   }
 }
 
+export function meta({ loaderData }: Route.MetaArgs) {
+  return [{ title: loaderData?.playlist.name ?? 'Playlist' }]
+}
+
 export async function action({ params, request }: Route.ActionArgs) {
   const formData = await request.formData()
   const intent = formData.get('intent')

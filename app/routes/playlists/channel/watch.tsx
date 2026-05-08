@@ -12,6 +12,10 @@ export function loader({ params }: Route.LoaderArgs) {
   return { channel, playlistId: params.id }
 }
 
+export function meta({ loaderData }: Route.MetaArgs) {
+  return [{ title: `TV - ${loaderData?.channel.name ?? 'Channel'}` }]
+}
+
 export async function action({ params, request }: Route.ActionArgs) {
   const formData = await request.formData()
   const intent = formData.get('intent')

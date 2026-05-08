@@ -8,6 +8,10 @@ export function loader() {
   return { channels }
 }
 
+export function meta() {
+  return [{ title: 'Favorites' }]
+}
+
 export default function Favorites({ loaderData }: Route.ComponentProps) {
   const { channels } = loaderData
 

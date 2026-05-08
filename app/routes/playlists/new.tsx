@@ -12,6 +12,10 @@ import {
 } from '~/lib/playlist-service.server'
 import type { Route } from './+types/new'
 
+export function meta() {
+  return [{ title: 'Add Playlist' }]
+}
+
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData()
   const name = formData.get('name') as string

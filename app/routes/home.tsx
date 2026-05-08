@@ -8,6 +8,10 @@ export function loader() {
   return { playlists }
 }
 
+export function meta() {
+  return [{ title: 'IPTV' }]
+}
+
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { playlists } = loaderData
 
