@@ -94,6 +94,7 @@ export async function action({ params, request }: Route.ActionArgs) {
 export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
   const navigation = useNavigation()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [hasCopiedPlaylistUrl, setHasCopiedPlaylistUrl] = useState(false)
   const {
     playlist,
     channels,
@@ -106,13 +107,43 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
     searchQuery,
   } = loaderData
   const isDeleting = navigation.state === 'submitting'
+  const canCopyPlaylistUrl = Boolean(playlist.url)
+
+  const handleCopyPlaylistUrl = async () => {
+    if (!playlist.url) return
+
+    await navigator.clipboard.writeText(playlist.url)
+    setHasCopiedPlaylistUrl(true)
+    window.setTimeout(() => setHasCopiedPlaylistUrl(false), 2000)
+  }
 
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <div className="mb-8 flex items-center justify-between gap-4">
-            <h1 className="truncate text-5xl font-bold">{playlist.name}</h1>
+            <div className="flex min-w-0 items-center gap-3">
+              <h1 className="truncate text-5xl font-bold">{playlist.name}</h1>
+              {canCopyPlaylistUrl && (
+                <button
+                  type="button"
+                  aria-label={
+                    hasCopiedPlaylistUrl
+                      ? 'Playlist URL copied'
+                      : 'Copy playlist URL'
+                  }
+                  title={
+                    hasCopiedPlaylistUrl
+                      ? 'Playlist URL copied'
+                      : 'Copy playlist URL'
+                  }
+                  className="shrink-0 rounded-xl bg-gray-800 p-3 text-gray-300 transition-colors hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-offset-4 focus:ring-offset-gray-900"
+                  onClick={handleCopyPlaylistUrl}
+                >
+                  {hasCopiedPlaylistUrl ? <CheckIcon /> : <CopyIcon />}
+                </button>
+              )}
+            </div>
             <button
               type="button"
               className="shrink-0 rounded-xl bg-red-700 px-8 py-4 text-xl font-semibold text-white transition-colors hover:bg-red-600 focus:outline-none focus:ring-8 focus:ring-red-500 focus:ring-offset-4 focus:ring-offset-gray-900"
@@ -202,5 +233,40 @@ function DeletePlaylistDialog({
         </div>
       </div>
     </div>
+  )
+}
+
+function CopyIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <rect height="13" rx="2" ry="2" width="13" x="9" y="9" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  )
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2.5"
+      viewBox="0 0 24 24"
+    >
+      <path d="m20 6-11 11-5-5" />
+    </svg>
   )
 }
