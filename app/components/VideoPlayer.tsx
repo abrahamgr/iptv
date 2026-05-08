@@ -1,11 +1,12 @@
 import Hls from 'hls.js'
 import { useEffect, useRef } from 'react'
 
-interface VideoPlayerProps {
+type VideoPlayerProps = {
   url: string
+  className?: string
 }
 
-export function VideoPlayer({ url }: VideoPlayerProps) {
+export function VideoPlayer({ url, className }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export function VideoPlayer({ url }: VideoPlayerProps) {
     <video
       ref={videoRef}
       controls
-      className="w-full max-h-[80vh] bg-black rounded-xl"
+      className={className ?? 'w-full max-h-[80vh] bg-black rounded-xl'}
     />
   )
 }
