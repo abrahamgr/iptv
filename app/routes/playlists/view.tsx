@@ -110,27 +110,29 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-5xl font-bold">{playlist.name}</h1>
-          <button
-            type="button"
-            className="bg-red-700 hover:bg-red-600 text-white text-xl font-semibold py-4 px-8 rounded-xl focus:outline-none focus:ring-8 focus:ring-red-500 focus:ring-offset-4 focus:ring-offset-gray-900 transition-colors"
-            onClick={() => setIsDeleteDialogOpen(true)}
-          >
-            Delete Playlist
-          </button>
-        </div>
-        <p className="text-2xl text-gray-400 mb-8">
-          {totalCount === totalChannels
-            ? `${totalChannels} channels`
-            : `${totalCount} of ${totalChannels} channels`}
-        </p>
+        <div className="mb-8">
+          <div className="mb-8 flex items-center justify-between gap-4">
+            <h1 className="truncate text-5xl font-bold">{playlist.name}</h1>
+            <button
+              type="button"
+              className="shrink-0 rounded-xl bg-red-700 px-8 py-4 text-xl font-semibold text-white transition-colors hover:bg-red-600 focus:outline-none focus:ring-8 focus:ring-red-500 focus:ring-offset-4 focus:ring-offset-gray-900"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              Delete Playlist
+            </button>
+          </div>
+          <p className="mb-8 text-2xl text-gray-400">
+            {totalCount === totalChannels
+              ? `${totalChannels} channels`
+              : `${totalCount} of ${totalChannels} channels`}
+          </p>
 
-        <ChannelFilters
-          categories={allCategories}
-          selectedCategories={filteredCategories ?? []}
-          searchQuery={searchQuery ?? ''}
-        />
+          <ChannelFilters
+            categories={allCategories}
+            selectedCategories={filteredCategories ?? []}
+            searchQuery={searchQuery ?? ''}
+          />
+        </div>
 
         <ChannelsList
           channels={channels}

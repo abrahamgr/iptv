@@ -39,7 +39,7 @@ export function ChannelFilters({
   }
 
   return (
-    <div className="mb-8 space-y-4">
+    <div className="space-y-4">
       <Form
         key={filterKey}
         method="get"
