@@ -12,6 +12,7 @@ import {
 
 type WatchControlsProps = {
   adjustVolume: (delta: number) => void
+  hasLoadedOnce: boolean
   isFullscreen: boolean
   isLoading: boolean
   isMuted: boolean
@@ -24,6 +25,7 @@ type WatchControlsProps = {
 
 export function WatchControls({
   adjustVolume,
+  hasLoadedOnce,
   isFullscreen,
   isLoading,
   isMuted,
@@ -35,12 +37,21 @@ export function WatchControls({
 }: WatchControlsProps) {
   const effectiveVolume = isMuted ? 0 : volume
   const volumePercentage = Math.round(effectiveVolume * 100)
+  const isBuffering = isLoading && hasLoadedOnce
 
   return (
     <div className="pointer-events-auto absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent px-4 py-5 sm:px-6">
       <div className="flex flex-wrap items-center justify-center gap-3 sm:justify-between">
         <div className="flex items-center gap-3">
-          {!isLoading && (
+          {isBuffering ? (
+            <span className="inline-flex h-10 items-center gap-2 rounded-full bg-amber-500 px-4 text-sm font-bold text-black">
+              <span
+                aria-hidden="true"
+                className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-black/30 border-t-black"
+              />
+              BUFFERING
+            </span>
+          ) : (
             <span className="inline-flex h-10 items-center rounded-full bg-red-600 px-4 text-sm font-bold text-white">
               LIVE
             </span>

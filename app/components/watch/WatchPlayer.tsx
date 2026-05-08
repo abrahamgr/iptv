@@ -122,7 +122,7 @@ export function WatchPlayer({
         className="h-full w-full bg-black"
       />
 
-      {isLoading && (
+      {isLoading && !hasLoadedOnce && (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4 rounded-2xl bg-black/45 px-8 py-6 text-white shadow-2xl ring-1 ring-white/10 backdrop-blur">
             <div
@@ -130,11 +130,7 @@ export function WatchPlayer({
               className="h-12 w-12 animate-spin rounded-full border-4 border-white/25 border-t-white"
             />
             <div className="text-center">
-              <p className="text-lg font-semibold">
-                {hasLoadedOnce
-                  ? 'Buffering live stream'
-                  : 'Loading live stream'}
-              </p>
+              <p className="text-lg font-semibold">Loading live stream</p>
               <p className="mt-1 text-sm text-gray-300">Please wait...</p>
             </div>
           </div>
@@ -157,6 +153,7 @@ export function WatchPlayer({
         />
         <WatchControls
           adjustVolume={adjustVolume}
+          hasLoadedOnce={hasLoadedOnce}
           isFullscreen={isFullscreen}
           isLoading={isLoading}
           isMuted={isMuted}
@@ -169,9 +166,11 @@ export function WatchPlayer({
       </div>
 
       <div className="sr-only" aria-live="polite">
-        {areControlsVisible
-          ? 'Player controls visible'
-          : 'Player controls hidden'}
+        {isLoading && hasLoadedOnce
+          ? 'Buffering live stream'
+          : areControlsVisible
+            ? 'Player controls visible'
+            : 'Player controls hidden'}
       </div>
     </div>
   )
