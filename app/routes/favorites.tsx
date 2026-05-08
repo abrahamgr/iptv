@@ -1,11 +1,25 @@
 import { Link } from 'react-router'
 import { ChannelGrid } from '~/components/ChannelGrid'
-import { getFavoriteChannels } from '~/lib/playlist-service.server'
+import {
+  deleteChannel,
+  getFavoriteChannels,
+} from '~/lib/playlist-service.server'
 import type { Route } from './+types/favorites'
 
 export function loader() {
   const channels = getFavoriteChannels()
   return { channels }
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData()
+  const intent = formData.get('intent')
+
+  if (intent === 'deleteChannel') {
+    deleteChannel(Number(formData.get('channelId')))
+  }
+
+  return null
 }
 
 export default function Favorites({ loaderData }: Route.ComponentProps) {

@@ -36,7 +36,7 @@ export function ChannelsList({
     const nextParams = new URLSearchParams(searchParams)
     const nextLimit = Math.min(loadedLimit + LOAD_MORE_INCREMENT, totalCount)
     nextParams.set('limit', nextLimit.toString())
-    setSearchParams(nextParams)
+    setSearchParams(nextParams, { preventScrollReset: true })
   }
 
   const isLoading =

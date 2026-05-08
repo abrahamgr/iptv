@@ -1,13 +1,9 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useLocation } from 'react-router'
-
-interface Channel {
-  id: number
-  playlistId?: number
-  name: string
-  logo: string | null
-}
+import { useLocation } from 'react-router'
+import { ChannelCard } from './ChannelCard'
+import type { Channel } from './channel-types'
+import { DeleteChannelDialog } from './DeleteChannelDialog'
 
 interface ChannelGridProps {
   channels: Channel[]
@@ -31,6 +27,7 @@ export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
   const location = useLocation()
   const parentRef = useRef<HTMLDivElement>(null)
   const [columnsCount, setColumnsCount] = useState(5)
+  const [channelToDelete, setChannelToDelete] = useState<Channel | null>(null)
 
   // Update columns count on resize
   useEffect(() => {
@@ -95,100 +92,79 @@ export function ChannelGrid({ channels, playlistId }: ChannelGridProps) {
   // For small lists, render all items normally (no virtualization overhead)
   if (channels.length <= 30) {
     return (
-      <div
-        ref={parentRef}
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
-      >
-        {channels.map((channel) => (
-          <ChannelCard
-            key={channel.id}
-            channel={channel}
-            playlistId={playlistId}
-            search={location.search}
+      <>
+        <div
+          ref={parentRef}
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
+        >
+          {channels.map((channel) => (
+            <ChannelCard
+              key={channel.id}
+              channel={channel}
+              playlistId={playlistId}
+              search={location.search}
+              onDelete={() => setChannelToDelete(channel)}
+            />
+          ))}
+        </div>
+        {channelToDelete && (
+          <DeleteChannelDialog
+            channel={channelToDelete}
+            onClose={() => setChannelToDelete(null)}
           />
-        ))}
-      </div>
+        )}
+      </>
     )
   }
 
   // For larger lists, use virtual scrolling with row-based rendering
   return (
-    <div
-      ref={parentRef}
-      className="relative"
-      style={{
-        height: `${virtualizer.getTotalSize()}px`,
-      }}
-    >
-      {virtualRows.map((virtualRow) => {
-        const row = rows[virtualRow.index]
-        if (!row) return null
+    <>
+      <div
+        ref={parentRef}
+        className="relative"
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+        }}
+      >
+        {virtualRows.map((virtualRow) => {
+          const row = rows[virtualRow.index]
+          if (!row) return null
 
-        return (
-          <div
-            key={virtualRow.key}
-            data-index={virtualRow.index}
-            ref={virtualizer.measureElement}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              transform: `translateY(${virtualRow.start}px)`,
-            }}
-          >
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-              {row.map((channel) => (
-                <ChannelCard
-                  key={channel.id}
-                  channel={channel}
-                  playlistId={playlistId}
-                  search={location.search}
-                />
-              ))}
+          return (
+            <div
+              key={virtualRow.key}
+              data-index={virtualRow.index}
+              ref={virtualizer.measureElement}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                {row.map((channel) => (
+                  <ChannelCard
+                    key={channel.id}
+                    channel={channel}
+                    playlistId={playlistId}
+                    search={location.search}
+                    onDelete={() => setChannelToDelete(channel)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-function ChannelCard({
-  channel,
-  playlistId,
-  search,
-}: {
-  channel: Channel
-  playlistId?: number
-  search: string
-}) {
-  const channelPlaylistId = playlistId ?? channel.playlistId
-
-  if (!channelPlaylistId) return null
-
-  return (
-    <Link
-      to={`/playlists/${channelPlaylistId}/watch/${channel.id}${search}`}
-      className="bg-gray-800 hover:bg-gray-700 rounded-xl overflow-hidden transition-colors focus:outline-none focus:ring-8 focus:ring-blue-500 focus:ring-offset-4 focus:ring-offset-gray-900"
-    >
-      <div className="aspect-video bg-gray-700 flex items-center justify-center">
-        {channel.logo ? (
-          <img
-            src={channel.logo}
-            alt={channel.name}
-            className="w-full h-full object-contain p-4"
-            onError={(e) => {
-              ;(e.target as HTMLImageElement).style.display = 'none'
-            }}
-          />
-        ) : (
-          <span className="text-4xl text-gray-500">TV</span>
-        )}
+          )
+        })}
       </div>
-      <div className="p-4">
-        <p className="text-lg font-medium truncate">{channel.name}</p>
-      </div>
-    </Link>
+      {channelToDelete && (
+        <DeleteChannelDialog
+          channel={channelToDelete}
+          onClose={() => setChannelToDelete(null)}
+        />
+      )}
+    </>
   )
 }

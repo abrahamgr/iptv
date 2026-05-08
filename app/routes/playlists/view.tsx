@@ -3,6 +3,7 @@ import { Form, redirect, useNavigation } from 'react-router'
 import { ChannelFilters } from '~/components/ChannelFilters'
 import { ChannelsList } from '~/components/ChannelsList'
 import {
+  deleteChannel,
   deletePlaylist,
   getChannelsAlphabetically,
   getPlaylistWithChannelsAlphabetically,
@@ -53,9 +54,14 @@ export async function action({ params, request }: Route.ActionArgs) {
   const formData = await request.formData()
   const intent = formData.get('intent')
 
-  if (intent === 'delete') {
+  if (intent === 'deletePlaylist') {
     deletePlaylist(Number(params.id))
     return redirect('/')
+  }
+
+  if (intent === 'deleteChannel') {
+    deleteChannel(Number(formData.get('channelId')))
+    return null
   }
 
   if (intent === 'loadMore') {
@@ -178,7 +184,7 @@ function DeletePlaylistDialog({
             Cancel
           </button>
           <Form method="post">
-            <input type="hidden" name="intent" value="delete" />
+            <input type="hidden" name="intent" value="deletePlaylist" />
             <button
               type="submit"
               disabled={isDeleting}

@@ -115,6 +115,11 @@ export function deletePlaylist(id: number) {
   db.delete(playlists).where(eq(playlists.id, id)).run()
 }
 
+export function deleteChannel(id: number) {
+  const db = getDb()
+  db.delete(channels).where(eq(channels.id, id)).run()
+}
+
 type ChannelFilters = {
   categories?: string[]
   searchQuery?: string
