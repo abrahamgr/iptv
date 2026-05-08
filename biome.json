@@ -7,7 +7,14 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!data", "!build", "!.react-router"]
+		"includes": [
+			"**",
+			"!data",
+			"!build",
+			"!.react-router",
+			"!.claude",
+			"!.agents"
+		]
 	},
 	"formatter": {
 		"enabled": true,

@@ -60,6 +60,7 @@ No test framework is configured.
 - Never use classes; prefer functional/declarative patterns
 - Use descriptive variable names with auxiliary verbs (isLoading, hasError)
 - Directory names: lowercase with dashes (auth-wizard)
+- File names: use camelCase for hooks, PascalCase for components, kebab-case for others
 - Use named exports for components
 - Structure files: exported component, subcomponents, helpers, static content, types
 - Follow Biomejs rules setup
