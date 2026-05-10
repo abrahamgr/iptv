@@ -23,9 +23,10 @@ for source_path in "$source_dir"/*; do
   skill_name="$(basename "$source_path")"
   target_path="$target_dir/$skill_name"
 
+  desired_target="../../.agents/skills/$skill_name"
+
   if [[ -L "$target_path" ]]; then
     current_target="$(readlink "$target_path")"
-    desired_target="$source_path"
 
     if [[ "$current_target" != "$desired_target" ]]; then
       rm "$target_path"
@@ -40,7 +41,7 @@ for source_path in "$source_dir"/*; do
     exit 1
   fi
 
-  ln -s "$source_path" "$target_path"
+  ln -s "$desired_target" "$target_path"
 done
 
 echo "Skills linked successfully."
