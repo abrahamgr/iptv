@@ -5,7 +5,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-gray-900 text-white">
       <nav className="sticky top-0 z-40 border-b border-gray-700 bg-gray-800/95 shadow-xl shadow-black/20 backdrop-blur">
         <div className="mx-auto max-w-7xl px-8">
-          <div className="flex min-h-20 items-center justify-between">
+          <div className="flex min-h-20 items-center justify-around">
             <div className="flex items-center gap-4">
               <NavLink
                 to="/"

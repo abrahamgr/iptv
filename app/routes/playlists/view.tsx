@@ -121,7 +121,7 @@ export default function PlaylistDetail({ loaderData }: Route.ComponentProps) {
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <div className="mb-8 flex items-center justify-between gap-4">
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <h1 className="truncate text-5xl font-bold">{playlist.name}</h1>
               {canCopyPlaylistUrl && (
