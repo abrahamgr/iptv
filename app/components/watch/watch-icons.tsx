@@ -106,6 +106,25 @@ export function VolumeUpIcon() {
   )
 }
 
+export function CcIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M10 10a2 2 0 0 0-3 0v4a2 2 0 0 0 3 0" />
+      <path d="M17 10a2 2 0 0 0-3 0v4a2 2 0 0 0 3 0" />
+    </svg>
+  )
+}
+
 export function MaximizeIcon() {
   return (
     <svg

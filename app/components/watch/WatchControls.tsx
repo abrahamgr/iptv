@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react'
+import { PlayerControlButton } from './PlayerControlButton'
+import { SubtitleMenu } from './SubtitleMenu'
+import type { SubtitleTrack } from './useSubtitleTracks'
 import {
   MaximizeIcon,
   MinimizeIcon,
@@ -11,12 +13,15 @@ import {
 } from './watch-icons'
 
 type WatchControlsProps = {
+  activeSubtitleTrackId: number
   adjustVolume: (delta: number) => void
   hasLoadedOnce: boolean
   isFullscreen: boolean
   isLoading: boolean
   isMuted: boolean
   isPlaying: boolean
+  setActiveSubtitleTrack: (id: number) => void
+  subtitleTracks: SubtitleTrack[]
   toggleFullscreen: () => void
   toggleMute: () => void
   togglePlay: () => void
@@ -24,12 +29,15 @@ type WatchControlsProps = {
 }
 
 export function WatchControls({
+  activeSubtitleTrackId,
   adjustVolume,
   hasLoadedOnce,
   isFullscreen,
   isLoading,
   isMuted,
   isPlaying,
+  setActiveSubtitleTrack,
+  subtitleTracks,
   toggleFullscreen,
   toggleMute,
   togglePlay,
@@ -95,6 +103,13 @@ export function WatchControls({
           >
             <VolumeUpIcon />
           </PlayerControlButton>
+          {subtitleTracks.length > 0 && (
+            <SubtitleMenu
+              activeTrackId={activeSubtitleTrackId}
+              onSelect={setActiveSubtitleTrack}
+              tracks={subtitleTracks}
+            />
+          )}
           <PlayerControlButton
             label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             onClick={toggleFullscreen}
@@ -104,29 +119,5 @@ export function WatchControls({
         </div>
       </div>
     </div>
-  )
-}
-
-type PlayerControlButtonProps = {
-  children: ReactNode
-  label: string
-  onClick: () => void
-}
-
-function PlayerControlButton({
-  children,
-  label,
-  onClick,
-}: PlayerControlButtonProps) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={onClick}
-      className="flex h-11 w-11 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-blue-500"
-    >
-      {children}
-    </button>
   )
 }

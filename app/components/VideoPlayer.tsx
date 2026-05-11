@@ -4,10 +4,11 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 type VideoPlayerProps = {
   url: string
   className?: string
+  onHlsReady?: (hls: Hls | null) => void
 }
 
 export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
-  function VideoPlayer({ url, className }, ref) {
+  function VideoPlayer({ url, className, onHlsReady }, ref) {
     const videoRef = useRef<HTMLVideoElement>(null)
     useImperativeHandle(ref, () => videoRef.current as HTMLVideoElement, [])
 
@@ -24,6 +25,7 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
 
         hls.loadSource(url)
         hls.attachMedia(video)
+        onHlsReady?.(hls)
 
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           video.play().catch(() => {})
@@ -50,12 +52,14 @@ export const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
         video.addEventListener('loadedmetadata', () => {
           video.play().catch(() => {})
         })
+        onHlsReady?.(null)
       }
 
       return () => {
         hls?.destroy()
+        onHlsReady?.(null)
       }
-    }, [url])
+    }, [url, onHlsReady])
 
     return (
       <video

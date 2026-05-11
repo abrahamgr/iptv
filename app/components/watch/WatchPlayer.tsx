@@ -1,3 +1,4 @@
+import type Hls from 'hls.js'
 import {
   type MouseEvent,
   type ReactNode,
@@ -7,6 +8,7 @@ import {
   useState,
 } from 'react'
 import { VideoPlayer } from '~/components/VideoPlayer'
+import { useSubtitleTracks } from './useSubtitleTracks'
 import { useVideoControls } from './useVideoControls'
 import { WatchControls } from './WatchControls'
 import { WatchTopOverlay } from './WatchTopOverlay'
@@ -38,6 +40,12 @@ export function WatchPlayer({
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [areControlsVisible, setAreControlsVisible] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [hls, setHls] = useState<Hls | null>(null)
+  const {
+    activeTrackId: activeSubtitleTrackId,
+    setActiveTrack: setActiveSubtitleTrack,
+    tracks: subtitleTracks,
+  } = useSubtitleTracks(videoRef, hls)
   const {
     adjustVolume,
     hasLoadedOnce,
@@ -120,6 +128,7 @@ export function WatchPlayer({
         ref={videoRef}
         url={channel.url}
         className="h-full w-full bg-black"
+        onHlsReady={setHls}
       />
 
       {isLoading && !hasLoadedOnce && (
@@ -152,12 +161,15 @@ export function WatchPlayer({
           title={channel.name}
         />
         <WatchControls
+          activeSubtitleTrackId={activeSubtitleTrackId}
           adjustVolume={adjustVolume}
           hasLoadedOnce={hasLoadedOnce}
           isFullscreen={isFullscreen}
           isLoading={isLoading}
           isMuted={isMuted}
           isPlaying={isPlaying}
+          setActiveSubtitleTrack={setActiveSubtitleTrack}
+          subtitleTracks={subtitleTracks}
           toggleFullscreen={toggleFullscreen}
           toggleMute={toggleMute}
           togglePlay={togglePlay}
