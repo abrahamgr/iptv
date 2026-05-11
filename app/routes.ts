@@ -18,4 +18,5 @@ export default [
       'routes/playlists/channel/watch.tsx',
     ),
   ]),
+  route('cert', 'routes/cert.tsx'),
 ] satisfies RouteConfig

@@ -45,6 +45,19 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             ))}
           </div>
         )}
+
+        <div className="mt-16 border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+          <a
+            href="/tv/cert"
+            download="iptv-local.crt"
+            className="text-blue-400 hover:text-blue-300 underline focus:outline-none focus:ring-4 focus:ring-blue-500 rounded"
+          >
+            Download HTTPS certificate
+          </a>
+          <span className="ml-2">
+            — install on your device to trust this server.
+          </span>
+        </div>
       </div>
     </div>
   )
