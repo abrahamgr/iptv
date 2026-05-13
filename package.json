@@ -10,6 +10,7 @@
 		"build": "react-router build",
 		"certs": "./scripts/generate-cert.sh",
 		"dev": "react-router dev",
+		"dev:https": "HTTPS=true react-router dev",
 		"lint": "npx @biomejs/biome check",
 		"lint:fix": "npx @biomejs/biome check --write --unsafe ",
 		"prepare": "lefthook install && ./scripts/link-skills.sh || true",

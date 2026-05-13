@@ -3,9 +3,10 @@ import { PlaylistCard } from '~/components/PlaylistCard'
 import { getAllPlaylists } from '~/lib/playlist-service.server'
 import type { Route } from './+types/home'
 
-export function loader() {
+export function loader({ request }: Route.LoaderArgs) {
   const playlists = getAllPlaylists()
-  return { playlists }
+  const isHttps = new URL(request.url).protocol === 'https:'
+  return { playlists, isHttps }
 }
 
 export function meta() {
@@ -13,10 +14,10 @@ export function meta() {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { playlists } = loaderData
+  const { playlists, isHttps } = loaderData
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-8 pb-24">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-12">
           <h1 className="text-5xl font-bold">IPTV Playlists</h1>
@@ -45,8 +46,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             ))}
           </div>
         )}
+      </div>
 
-        <div className="mt-16 border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+      {isHttps && (
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur border-t border-gray-800 py-3 text-center text-sm text-gray-400 z-10">
           <a
             href="/tv/cert"
             download="iptv-local.crt"
@@ -58,7 +61,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             — install on your device to trust this server.
           </span>
         </div>
-      </div>
+      )}
     </div>
   )
 }
