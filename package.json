@@ -8,7 +8,7 @@
 		"docker:build": "docker build -t iptv .",
 		"docker:run": "docker run --name iptv -d -p 3000:3000 -v ./data:/app/data iptv",
 		"build": "react-router build",
-		"cert:generate": "./scripts/generate-cert.sh",
+		"certs": "./scripts/generate-cert.sh",
 		"dev": "react-router dev",
 		"lint": "npx @biomejs/biome check",
 		"lint:fix": "npx @biomejs/biome check --write --unsafe ",

@@ -20,5 +20,5 @@ COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build
 COPY --from=build-env /app/app/db/migrations /app/app/db/migrations
 WORKDIR /app
-VOLUME ["/app/data"]
+VOLUME ["/app/data", "/app/certs"]
 CMD ["npm", "run", "start"]

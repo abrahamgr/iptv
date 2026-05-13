@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CERT_DIR="$(cd "$(dirname "$0")/.." && pwd)/data"
+CERT_DIR="$(cd "$(dirname "$0")/.." && pwd)/certs"
 CERT_FILE="$CERT_DIR/cert.pem"
 KEY_FILE="$CERT_DIR/cert.key"
 

@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 export async function loader() {
-  const path = resolve(process.cwd(), 'data/cert.pem')
+  const path = resolve(process.cwd(), 'certs/cert.pem')
   try {
     const pem = await readFile(path)
     return new Response(new Uint8Array(pem), {

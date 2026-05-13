@@ -39,7 +39,9 @@ export function ChannelCard({
           )}
         </div>
         <div className="p-4 pb-3">
-          <p className="text-lg font-medium truncate">{channel.name}</p>
+          <p className="text-lg font-medium truncate" title={channel.name}>
+            {channel.name}
+          </p>
         </div>
       </Link>
       {onDelete && (
