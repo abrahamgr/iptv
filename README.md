@@ -60,6 +60,14 @@ The app will be available at `http://localhost:3000`.
 
 ## Docker
 
+> **NOTE**
+>
+> `package-lock.json` must be generated on Linux (the same platform Docker uses) so that platform-specific optional packages are included. After adding or upgrading dependencies on macOS, regenerate the lock file before building the image:
+> ```bash
+> docker run --rm -v "$(pwd)":/app -w /app node:24-alpine npm install --ignore-scripts
+> ```
+> Without this step, `npm ci` inside Docker will fail with `Missing: <package> from lock file`.
+
 Build and run with Docker:
 
 ```bash
