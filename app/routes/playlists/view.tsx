@@ -1,15 +1,13 @@
 import { useState } from 'react'
-import { data, Form, redirect, useNavigation } from 'react-router'
+import { Form, redirect, useNavigation } from 'react-router'
 import { ChannelFilters } from '~/components/ChannelFilters'
 import { ChannelsList } from '~/components/ChannelsList'
-import { editChannelSchema } from '~/lib/channel-schemas'
 import {
   deleteChannel,
   deletePlaylist,
   getAllPlaylists,
   getChannelsAlphabetically,
   getPlaylistWithChannelsAlphabetically,
-  updateChannel,
 } from '~/lib/playlist-service.server'
 import type { Route } from './+types/view'
 
@@ -71,26 +69,6 @@ export async function action({ params, request }: Route.ActionArgs) {
 
   if (intent === 'deleteChannel') {
     deleteChannel(Number(formData.get('channelId')))
-    return null
-  }
-
-  if (intent === 'editChannel') {
-    const result = editChannelSchema.safeParse(Object.fromEntries(formData))
-
-    if (!result.success) {
-      return data(
-        { intent: 'editChannel' as const, errors: result.error.format() },
-        { status: 400 },
-      )
-    }
-
-    const { channelId, ...fields } = result.data
-    updateChannel(channelId, {
-      ...fields,
-      logo: fields.logo || null,
-      tvgName: fields.tvgName || null,
-    })
-
     return null
   }
 

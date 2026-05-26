@@ -62,7 +62,11 @@ export function EditChannelDialog({
           Edit Channel
         </h2>
 
-        <fetcher.Form method="post" className="mt-6 space-y-5">
+        <fetcher.Form
+          method="post"
+          action="/channels/edit"
+          className="mt-6 space-y-5"
+        >
           <input type="hidden" name="intent" value="editChannel" />
           <input type="hidden" name="channelId" value={channel.id} />
 

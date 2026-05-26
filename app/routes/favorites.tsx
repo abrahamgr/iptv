@@ -1,11 +1,15 @@
 import { Link } from 'react-router'
 import { ChannelGrid } from '~/components/ChannelGrid'
-import { getFavoriteChannels } from '~/lib/playlist-service.server'
+import {
+  getAllPlaylists,
+  getFavoriteChannels,
+} from '~/lib/playlist-service.server'
 import type { Route } from './+types/favorites'
 
 export function loader() {
   const channels = getFavoriteChannels()
-  return { channels }
+  const allPlaylists = getAllPlaylists()
+  return { channels, allPlaylists }
 }
 
 export function meta() {
@@ -13,7 +17,7 @@ export function meta() {
 }
 
 export default function Favorites({ loaderData }: Route.ComponentProps) {
-  const { channels } = loaderData
+  const { channels, allPlaylists } = loaderData
 
   return (
     <div className="min-h-screen p-8">
@@ -40,7 +44,7 @@ export default function Favorites({ loaderData }: Route.ComponentProps) {
             </Link>
           </div>
         ) : (
-          <ChannelGrid channels={channels} />
+          <ChannelGrid channels={channels} allPlaylists={allPlaylists} />
         )}
       </div>
     </div>
