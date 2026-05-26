@@ -1,17 +1,11 @@
 import { useNavigation, useSearchParams } from 'react-router'
 import { ChannelGrid } from './ChannelGrid'
-
-interface Channel {
-  id: number
-  name: string
-  url: string
-  logo: string | null
-  groupTitle: string
-}
+import type { FullChannel, PlaylistOption } from './channel-types'
 
 interface ChannelsListProps {
-  channels: Channel[]
+  channels: FullChannel[]
   playlistId: number
+  allPlaylists: PlaylistOption[]
   totalCount: number
   hasMore: boolean
   loadedLimit: number
@@ -24,6 +18,7 @@ const LOAD_MORE_INCREMENT = 30
 export function ChannelsList({
   channels: initialChannels,
   playlistId,
+  allPlaylists,
   totalCount,
   hasMore: initialHasMore,
   loadedLimit,
@@ -54,6 +49,7 @@ export function ChannelsList({
             canDelete
             channels={initialChannels}
             playlistId={playlistId}
+            allPlaylists={allPlaylists}
           />
           {hasMore && (
             <div className="mt-6 text-center">

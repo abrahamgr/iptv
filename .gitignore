@@ -7,3 +7,7 @@
 /build/
 /data/
 /certs/
+
+# AI
+.claude/skills
+CLAUDE.md

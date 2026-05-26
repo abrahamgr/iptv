@@ -120,6 +120,31 @@ export function deleteChannel(id: number) {
   db.delete(channels).where(eq(channels.id, id)).run()
 }
 
+export function updateChannel(
+  id: number,
+  data: {
+    playlistId: number
+    name: string
+    url: string
+    logo: string | null
+    groupTitle: string
+    tvgName: string | null
+  },
+) {
+  const db = getDb()
+  db.update(channels)
+    .set({
+      playlistId: data.playlistId,
+      name: data.name,
+      url: data.url,
+      logo: data.logo || null,
+      groupTitle: data.groupTitle,
+      tvgName: data.tvgName || null,
+    })
+    .where(eq(channels.id, id))
+    .run()
+}
+
 type ChannelFilters = {
   categories?: string[]
   searchQuery?: string

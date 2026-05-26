@@ -1,18 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useFetcher } from 'react-router'
 import { ChannelGrid } from './ChannelGrid'
-
-interface Channel {
-  id: number
-  name: string
-  url: string
-  logo: string | null
-  groupTitle: string
-}
+import type { FullChannel } from './channel-types'
 
 interface CategorySectionProps {
   title: string
-  channels: Channel[]
+  channels: FullChannel[]
   playlistId: number
   totalCount: number
   hasMore: boolean
@@ -30,12 +23,12 @@ export function CategorySection({
   searchQuery,
 }: CategorySectionProps) {
   const fetcher = useFetcher<{
-    channels: Channel[]
+    channels: FullChannel[]
     totalCount: number
     hasMore: boolean
   }>()
   const [loadedChannels, setLoadedChannels] =
-    useState<Channel[]>(initialChannels)
+    useState<FullChannel[]>(initialChannels)
   const [currentOffset, setCurrentOffset] = useState(initialChannels.length)
   const [hasMore, setHasMore] = useState(initialHasMore)
 

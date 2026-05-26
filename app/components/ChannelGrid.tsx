@@ -2,13 +2,15 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router'
 import { ChannelCard } from './ChannelCard'
-import type { Channel } from './channel-types'
+import type { FullChannel, PlaylistOption } from './channel-types'
 import { DeleteChannelDialog } from './DeleteChannelDialog'
+import { EditChannelDialog } from './EditChannelDialog'
 
 interface ChannelGridProps {
   canDelete?: boolean
-  channels: Channel[]
+  channels: FullChannel[]
   playlistId?: number
+  allPlaylists?: PlaylistOption[]
 }
 
 // Estimate item height for virtual scrolling
@@ -28,11 +30,15 @@ export function ChannelGrid({
   canDelete = false,
   channels,
   playlistId,
+  allPlaylists,
 }: ChannelGridProps) {
   const location = useLocation()
   const parentRef = useRef<HTMLDivElement>(null)
   const [columnsCount, setColumnsCount] = useState(5)
-  const [channelToDelete, setChannelToDelete] = useState<Channel | null>(null)
+  const [channelToDelete, setChannelToDelete] = useState<FullChannel | null>(
+    null,
+  )
+  const [channelToEdit, setChannelToEdit] = useState<FullChannel | null>(null)
 
   // Update columns count on resize
   useEffect(() => {
@@ -75,7 +81,7 @@ export function ChannelGrid({
 
   // Group channels into rows for virtualization
   const rows = useMemo(() => {
-    const result: Channel[][] = []
+    const result: FullChannel[][] = []
     for (let i = 0; i < channels.length; i += columnsCount) {
       result.push(channels.slice(i, i + columnsCount))
     }
@@ -111,6 +117,9 @@ export function ChannelGrid({
               onDelete={
                 canDelete ? () => setChannelToDelete(channel) : undefined
               }
+              onEdit={
+                allPlaylists ? () => setChannelToEdit(channel) : undefined
+              }
             />
           ))}
         </div>
@@ -118,6 +127,13 @@ export function ChannelGrid({
           <DeleteChannelDialog
             channel={channelToDelete}
             onClose={() => setChannelToDelete(null)}
+          />
+        )}
+        {channelToEdit && allPlaylists && (
+          <EditChannelDialog
+            channel={channelToEdit}
+            allPlaylists={allPlaylists}
+            onClose={() => setChannelToEdit(null)}
           />
         )}
       </>
@@ -161,6 +177,9 @@ export function ChannelGrid({
                     onDelete={
                       canDelete ? () => setChannelToDelete(channel) : undefined
                     }
+                    onEdit={
+                      allPlaylists ? () => setChannelToEdit(channel) : undefined
+                    }
                   />
                 ))}
               </div>
@@ -172,6 +191,13 @@ export function ChannelGrid({
         <DeleteChannelDialog
           channel={channelToDelete}
           onClose={() => setChannelToDelete(null)}
+        />
+      )}
+      {channelToEdit && allPlaylists && (
+        <EditChannelDialog
+          channel={channelToEdit}
+          allPlaylists={allPlaylists}
+          onClose={() => setChannelToEdit(null)}
         />
       )}
     </>

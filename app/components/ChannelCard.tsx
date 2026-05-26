@@ -6,6 +6,7 @@ type ChannelCardProps = {
   playlistId?: number
   search: string
   onDelete?: () => void
+  onEdit?: () => void
 }
 
 export function ChannelCard({
@@ -13,6 +14,7 @@ export function ChannelCard({
   playlistId,
   search,
   onDelete,
+  onEdit,
 }: ChannelCardProps) {
   const channelPlaylistId = playlistId ?? channel.playlistId
 
@@ -44,6 +46,28 @@ export function ChannelCard({
           </p>
         </div>
       </Link>
+      {onEdit && (
+        <button
+          type="button"
+          onClick={onEdit}
+          aria-label={`Edit ${channel.name}`}
+          className="absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-blue-700/95 text-white opacity-0 shadow-lg transition-opacity hover:bg-blue-600 focus:opacity-100 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 group-hover:opacity-100 group-focus-within:opacity-100"
+        >
+          <svg
+            aria-hidden="true"
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+        </button>
+      )}
       {onDelete && (
         <button
           type="button"
